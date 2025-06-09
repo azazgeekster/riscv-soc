@@ -10,6 +10,8 @@
 //  ahb_output_port   Non-specific Output Port
 //
 
+`timescale 1ns / 100ps
+
 module soc(
 
   input HCLK, HRESETn,
@@ -21,8 +23,6 @@ module soc(
 
 );
  
-timeunit 1ns;
-timeprecision 100ps;
 
   // Global & Master AHB Signals
   wire [31:0] HADDR, HWDATA, HRDATA;
@@ -37,10 +37,10 @@ timeprecision 100ps;
   wire HREADYOUT_RAM, HREADYOUT_IPORT, HREADYOUT_OPORT;
 
   // Set this to zero because PicoRV32 does not support LOCKUP
-  assign LOCKUP = '0;
+  assign LOCKUP = 1'b0;
 
   // Set this to zero because simple slaves do not generate errors
-  assign HRESP = '0;
+  assign HRESP = 1'b0;
 
   // PicoRV32 is AHB Master
   picorv32_ahb riscv_1 (
@@ -99,32 +99,7 @@ timeprecision 100ps;
   // Assertions which should be valid for all systems:
   //
 
-  // Control signals from master should never be undefined
-  HTRANS_defined:
-    assert property(@(posedge HCLK) disable iff (!HRESETn)
-      ( ! $isunknown(HTRANS) )
-    ) else $error("HTRANS is undefined: %b", HTRANS);
-
-  HWRITE_defined:
-    assert property(@(posedge HCLK) disable iff (!HRESETn)
-      ( ! $isunknown(HWRITE) )
-    ) else $error("HWRITE is undefined");
-
-  HSIZE_defined:
-    assert property(@(posedge HCLK) disable iff (!HRESETn)
-      ( ! $isunknown(HSIZE) )
-    ) else $error("HSIZE is undefined: %b", HSIZE);
-
-  HADDR_defined:
-    assert property(@(posedge HCLK) disable iff (!HRESETn)
-      ( ! $isunknown(HADDR) )
-    ) else $error("HADDR is undefined: %b", HADDR);
-
-  // Data signal from master should be defined during write
-  HWDATA_defined:
-    assert property(@(posedge HCLK) disable iff (!HRESETn)
-      (HWRITE && HREADY) |=> ( ! $isunknown(HWDATA) )
-    ) else $error("HWDATA is undefined during write data phase: %b", HWDATA);
+  // Assertions removed for Verilog-2001 compatibility
 
 
 endmodule

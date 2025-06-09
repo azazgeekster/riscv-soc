@@ -3,6 +3,8 @@
  ***************************************************************/
 
 
+`timescale 1ns / 1ps
+
 module picorv32_ahb #(
 	parameter [ 0:0] ENABLE_COUNTERS = 1,
 	parameter [ 0:0] ENABLE_COUNTERS64 = 1,
@@ -39,7 +41,7 @@ module picorv32_ahb #(
 	output       [31:0] HADDR,
 	output              HWRITE,
 	output       [ 1:0] HTRANS,
-	output logic [ 2:0] HSIZE,
+        output reg [ 2:0] HSIZE,
 	output       [ 2:0] HBURST,
 	output       [ 3:0] HPROT,
 	output              HMASTLOCK,
@@ -91,7 +93,9 @@ module picorv32_ahb #(
         
 );
 
-	timeunit 1ns; timeprecision 1ps;
+        // synopsys translate_off
+        // simulation time scale
+        // synopsys translate_on
 
 	wire        mem_la_read;
 	wire        mem_la_write;
@@ -99,14 +103,14 @@ module picorv32_ahb #(
 	wire [ 3:0] mem_la_wstrb;
 	wire        mem_valid;
 
-	logic       resetn;
+        reg         resetn;
 
 
         // picorv32 expects a synchronous reset but
         // the rest of the system uses asynchronous reset
         // to get around this, create a synchronous resetn
         // signal for picorv32
-        always_ff @(posedge HCLK, negedge HRESETn)
+        always @(posedge HCLK or negedge HRESETn)
           if ( !HRESETn )
             resetn <= 0;
           else
@@ -195,10 +199,10 @@ module picorv32_ahb #(
         
         // convert native memory signals to AHB-Lite equivalents:
 
-	logic [ 1:0] HADDR_byte;
+        reg [ 1:0] HADDR_byte;
 
 	// confusingly mem_la_wstrb is for read and write whereas mem_wstrb is only for write
-        always_comb
+        always @*
           case ( mem_la_wstrb )
             4'b0001 : begin HSIZE = 3'b000; HADDR_byte = 0; end // byte access
             4'b0010 : begin HSIZE = 3'b000; HADDR_byte = 1; end // byte access
@@ -215,8 +219,8 @@ module picorv32_ahb #(
         assign HADDR   = { mem_la_addr[31:2] , HADDR_byte[1:0] };
         assign HTRANS = ( mem_la_read || mem_la_write ) ? 2 : 0; // Non-Sequential or Idle only
         assign HPROT = 4'b0001; // this will default to data fetch (user access, non-bufferable, non-cacheable)
-        assign HMASTLOCK = '0; // no locked transactions
-        assign HBURST = '0; // no burst transactions
+        assign HMASTLOCK = 1'b0; // no locked transactions
+        assign HBURST = 3'b000; // no burst transactions
 
 
 endmodule
