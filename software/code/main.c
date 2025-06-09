@@ -7,6 +7,7 @@
 
 #define AHB_IPORT_BASE                          0x40000000
 #define AHB_OPORT_BASE                          0x50000000
+#define AHB_UART_BASE                           0x60000000
 
 // Define pointers with correct type for access to 32-bit i/o devices
 //
@@ -16,6 +17,7 @@
 //
 volatile uint32_t* IPORT_REGS = (volatile uint32_t*) AHB_IPORT_BASE;
 volatile uint32_t* OPORT_REGS = (volatile uint32_t*) AHB_OPORT_BASE;
+volatile uint32_t* UART_REGS  = (volatile uint32_t*) AHB_UART_BASE;
 
 //////////////////////////////////////////////////////////////////
 // Functions provided to access i/o devices
@@ -37,6 +39,11 @@ uint32_t read_switches(void) {
 
   return IPORT_REGS[0];
 
+}
+
+void uart_send(uint8_t c) {
+  while ((UART_REGS[1] & 0x1) == 0) {}
+  UART_REGS[0] = c;
 }
 
 //////////////////////////////////////////////////////////////////
