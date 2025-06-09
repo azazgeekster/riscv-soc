@@ -16,7 +16,7 @@ SOFTWARE_OBJS = code/main.o code/crt.o code/start.o
 GCC_WARNS  = -Werror -Wall -Wextra -Wshadow -Wundef -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings
 GCC_WARNS += -Wredundant-decls -Wstrict-prototypes -pedantic # -Wconversion
 TOOLCHAIN_PREFIX = /opt/riscv32i/bin/riscv32-unknown-elf-
-HEX2V = /opt/cad/bim/c/hex2v/hex2v_soc
+HEX2V = $(PYTHON) ../tools/hex2v.py
 
 # Define optimisation level here
 # Start wih no optimisation - better for understanding the code

@@ -28,6 +28,8 @@
   `define PROG_FILE  "code.hex"
 `endif
 
+`timescale 1ns / 100ps
+
 module ahb_ram #(
   parameter MEMWIDTH = 14
 )(
@@ -51,19 +53,17 @@ module ahb_ram #(
 
 );
 
-timeunit 1ns;
-timeprecision 100ps;
 
   localparam No_Transfer = 2'b0;
 
 // Memory Array  
-  logic [3:0][7:0] memory[0:(2**(MEMWIDTH-2)-1)];
-  logic [31:0] data_from_memory;
+  reg [3:0][7:0] memory[0:(2**(MEMWIDTH-2)-1)];
+  reg [31:0] data_from_memory;
 
 //control signals are stored in registers
-  logic write_enable, read_enable;
-  logic [MEMWIDTH-3:0] write_address, read_address, saved_read_address;
-  logic [3:0] byte_select;
+  reg write_enable, read_enable;
+  reg [MEMWIDTH-3:0] write_address, read_address, saved_read_address;
+  reg [3:0] byte_select;
   
 
 // read program into ram
@@ -71,13 +71,13 @@ timeprecision 100ps;
     $readmemh( `PROG_FILE, memory, 0, (2**(MEMWIDTH-2)-1));
  
 //Generate the control signals and write_address in the address phase
-  always_ff @(posedge HCLK, negedge HRESETn)
+  always @(posedge HCLK or negedge HRESETn)
     if (! HRESETn )
       begin
-        write_enable <= '0;
-        read_enable <= '0;
-        write_address <= '0;
-        byte_select <= '0;
+        write_enable <= 1'b0;
+        read_enable <= 1'b0;
+        write_address <= {MEMWIDTH-2{1'b0}};
+        byte_select <= 4'b0;
       end
     else if ( HREADY && HSEL && (HTRANS != No_Transfer) )
       begin
@@ -88,21 +88,21 @@ timeprecision 100ps;
       end
     else
       begin
-        write_enable <= '0;
-        read_enable <= '0;
-        byte_select <= '0;
+        write_enable <= 1'b0;
+        read_enable <= 1'b0;
+        byte_select <= 4'b0;
       end
 
 // read address is calculated a cycle earlier than write address
-  always_comb
+  always @*
     if ( HREADY && HSEL && (HTRANS != No_Transfer) && ! HWRITE )
       read_address = HADDR[MEMWIDTH-1:2];
     else
       read_address = saved_read_address;
 
-  always_ff @(posedge HCLK, negedge HRESETn)
+  always @(posedge HCLK or negedge HRESETn)
     if (! HRESETn )
-      saved_read_address <= '0;
+      saved_read_address <= {MEMWIDTH-2{1'b0}};
     else
       saved_read_address <= read_address;
       
@@ -117,7 +117,7 @@ timeprecision 100ps;
   //    if read and write addresses match
   //  This avoids a potential read-after-write data hazard
   //
-  always_ff @(posedge HCLK)
+  always @(posedge HCLK)
     begin
       if ( write_enable )
         begin
@@ -131,18 +131,18 @@ timeprecision 100ps;
     
   //read
   // (output of zero when not enabled for read is not necessary but may help with debugging)
-  assign HRDATA[ 7: 0] = ( read_enable && byte_select[0] ) ? data_from_memory[ 7: 0] : '0;
-  assign HRDATA[15: 8] = ( read_enable && byte_select[1] ) ? data_from_memory[15: 8] : '0;
-  assign HRDATA[23:16] = ( read_enable && byte_select[2] ) ? data_from_memory[23:16] : '0;
-  assign HRDATA[31:24] = ( read_enable && byte_select[3] ) ? data_from_memory[31:24] : '0;
+  assign HRDATA[ 7: 0] = ( read_enable && byte_select[0] ) ? data_from_memory[ 7: 0] : 8'b0;
+  assign HRDATA[15: 8] = ( read_enable && byte_select[1] ) ? data_from_memory[15: 8] : 8'b0;
+  assign HRDATA[23:16] = ( read_enable && byte_select[2] ) ? data_from_memory[23:16] : 8'b0;
+  assign HRDATA[31:24] = ( read_enable && byte_select[3] ) ? data_from_memory[31:24] : 8'b0;
 
 //Transfer Response
-  assign HREADYOUT = '1; //Single cycle Write & Read. Zero Wait state operations
+  assign HREADYOUT = 1'b1; //Single cycle Write & Read. Zero Wait state operations
 
 
 // decode byte select signals from the size and the lowest two address bits
-  function logic [3:0] generate_byte_select( logic [2:0] size, logic [1:0] byte_adress );
-    logic byte3, byte2, byte1, byte0;
+  function [3:0] generate_byte_select( input [2:0] size, input [1:0] byte_adress );
+    reg byte3, byte2, byte1, byte0;
     byte0 = size[1] || ( byte_adress == 0 );
     byte1 = size[1] || ( size[0] && ( byte_adress == 0 ) ) || ( byte_adress == 1 );
     byte2 = size[1] || ( byte_adress == 2 );
