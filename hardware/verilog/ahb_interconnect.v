@@ -44,6 +44,7 @@ module ahb_interconnect #(
       HSEL_SIGNALS = 1 << 2;
     else
       HSEL_SIGNALS = 1 << 3;
+
   
   //-------------------------
   // the code below should work for any number of slaves
