@@ -1,0 +1,125 @@
+Archive member included to satisfy reference by file (symbol)
+
+/opt/riscv32i/lib/gcc/riscv32-unknown-elf/14.2.0/libgcc.a(muldi3.o)
+                              code/main.o (__mulsi3)
+
+Discarded input sections
+
+ .eh_frame      0x00000000       0x2c code/start.o
+ .debug_line    0x00000000       0x7a /opt/riscv32i/lib/gcc/riscv32-unknown-elf/14.2.0/libgcc.a(muldi3.o)
+ .debug_line_str
+                0x00000000       0x8f /opt/riscv32i/lib/gcc/riscv32-unknown-elf/14.2.0/libgcc.a(muldi3.o)
+ .debug_info    0x00000000       0x31 /opt/riscv32i/lib/gcc/riscv32-unknown-elf/14.2.0/libgcc.a(muldi3.o)
+ .debug_abbrev  0x00000000       0x28 /opt/riscv32i/lib/gcc/riscv32-unknown-elf/14.2.0/libgcc.a(muldi3.o)
+ .debug_aranges
+                0x00000000       0x20 /opt/riscv32i/lib/gcc/riscv32-unknown-elf/14.2.0/libgcc.a(muldi3.o)
+ .debug_str     0x00000000       0xa4 /opt/riscv32i/lib/gcc/riscv32-unknown-elf/14.2.0/libgcc.a(muldi3.o)
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+RAM              0x00000000         0x00004000         xrw
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+
+.text           0x00000000      0x27c
+                0x00000000                        _stext = .
+ CREATE_OBJECT_SYMBOLS
+ *(.reset.text)
+ .reset.text    0x00000000       0x1c code/start.o
+                0x00000000                _start
+ *(.text)
+ .text          0x0000001c      0x1ac code/main.o
+                0x0000001c                write_out
+                0x00000050                read_out
+                0x0000007c                read_switches
+                0x000000a8                factorial
+                0x00000104                main
+ .text          0x000001c8       0x90 code/crt.o
+                0x000001c8                ResetHandler
+ .text          0x00000258        0x0 code/start.o
+ .text          0x00000258       0x24 /opt/riscv32i/lib/gcc/riscv32-unknown-elf/14.2.0/libgcc.a(muldi3.o)
+                0x00000258                __mulsi3
+ *(.text.*)
+                0x0000027c                        . = ALIGN (0x4)
+ *(.rodata)
+ *(.rodata.*)
+                0x0000027c                        . = ALIGN (0x4)
+ *(.srodata)
+ *(.srodata.*)
+                0x0000027c                        . = ALIGN (0x4)
+                0x0000027c                        _etext = .
+
+.rela.dyn       0x0000027c        0x0
+ .rela.text     0x0000027c        0x0 code/main.o
+ .rela.reset.text
+                0x0000027c        0x0 code/main.o
+
+.data           0x0000027c        0x8
+                0x0000027c                        . = ALIGN (0x4)
+                0x0000027c                        _sdata = .
+ *(.data)
+ .data          0x0000027c        0x0 code/main.o
+ .data          0x0000027c        0x0 code/crt.o
+ .data          0x0000027c        0x0 code/start.o
+ .data          0x0000027c        0x0 /opt/riscv32i/lib/gcc/riscv32-unknown-elf/14.2.0/libgcc.a(muldi3.o)
+ *(.data.*)
+                0x0000027c                        . = ALIGN (0x4)
+                0x0000027c                        _small_data = .
+ *(.sdata)
+ .sdata         0x0000027c        0x8 code/main.o
+                0x0000027c                IPORT_REGS
+                0x00000280                OPORT_REGS
+ *(.sdata.*)
+                0x00000284                        . = ALIGN (0x4)
+                0x00000284                        _edata = .
+
+.bss            0x00000284        0x0
+                0x00000284                        . = ALIGN (0x4)
+                0x00000284                        _sbss = .
+ *(.sbss)
+ *(.sbss.*)
+                0x00000284                        . = ALIGN (0x4)
+ *(.bss)
+ .bss           0x00000284        0x0 code/main.o
+ .bss           0x00000284        0x0 code/crt.o
+ .bss           0x00000284        0x0 code/start.o
+ .bss           0x00000284        0x0 /opt/riscv32i/lib/gcc/riscv32-unknown-elf/14.2.0/libgcc.a(muldi3.o)
+ *(.bss.*)
+                0x00000284                        . = ALIGN (0x4)
+                0x00000284                        _ebss = .
+                0x00004000                        _estack = (ORIGIN (RAM) + LENGTH (RAM))
+                0x00000a7c                        __global_pointer$ = (_small_data + 0x800)
+
+/DISCARD/
+ *(.eh_frame)
+LOAD code/main.o
+LOAD code/crt.o
+LOAD code/start.o
+LOAD /opt/riscv32i/lib/gcc/riscv32-unknown-elf/14.2.0/libgcc.a
+OUTPUT(code.elf elf32-littleriscv)
+
+.comment        0x00000000        0xf
+ .comment       0x00000000        0xf code/main.o
+                                 0x10 (size before relaxing)
+ .comment       0x0000000f       0x10 code/crt.o
+
+.note.GNU-stack
+                0x00000000        0x0
+ .note.GNU-stack
+                0x00000000        0x0 code/main.o
+ .note.GNU-stack
+                0x00000000        0x0 code/crt.o
+
+.riscv.attributes
+                0x00000000       0x1c
+ .riscv.attributes
+                0x00000000       0x1c code/main.o
+ .riscv.attributes
+                0x0000001c       0x1c code/crt.o
+ .riscv.attributes
+                0x00000038       0x1a code/start.o
+ .riscv.attributes
+                0x00000052       0x1a /opt/riscv32i/lib/gcc/riscv32-unknown-elf/14.2.0/libgcc.a(muldi3.o)
