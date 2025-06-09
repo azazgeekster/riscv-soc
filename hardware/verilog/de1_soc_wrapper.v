@@ -20,7 +20,10 @@ module de1_soc_wrapper(
   output [6:0] HEX2,
   output [6:0] HEX3,
   output [6:0] HEX4,
-  output [6:0] HEX5
+  output [6:0] HEX5,
+
+  input UART_RX,
+  output UART_TX
 
 );
 
@@ -40,7 +43,15 @@ module de1_soc_wrapper(
   assign LEDR = oPort[9:0]; // DE1-SoC has just 10 LEDs
   assign DataValid = (oPort != -1);
   
-  soc soc_inst(.HCLK, .HRESETn, .oPort, .iPort, .LOCKUP);
+  soc soc_inst(
+    .HCLK(HCLK),
+    .HRESETn(HRESETn),
+    .oPort(oPort),
+    .iPort(iPort),
+    .LOCKUP(LOCKUP),
+    .uart_rx(UART_RX),
+    .uart_tx(UART_TX)
+  );
 
   // Drive HRESETn directly from active low CPU KEY[2] button
   assign HRESETn = KEY[2];

@@ -1,7 +1,7 @@
 `timescale 1ns / 100ps
 
 module ahb_interconnect #(
-  parameter num_slaves = 3
+  parameter num_slaves = 4
 )(
   // global signals
   input HCLK,
@@ -40,8 +40,11 @@ module ahb_interconnect #(
       HSEL_SIGNALS = 1 << 0;
     else if ( HADDR < 32'h5000_0000 )
       HSEL_SIGNALS = 1 << 1;
-    else
+    else if ( HADDR < 32'h6000_0000 )
       HSEL_SIGNALS = 1 << 2;
+    else
+      HSEL_SIGNALS = 1 << 3;
+
   
   //-------------------------
   // the code below should work for any number of slaves
