@@ -15,6 +15,8 @@
 //
 
 
+`timescale 1ns / 100ps
+
 module ahb_input_port(
 
   // AHB Global Signals
@@ -31,7 +33,7 @@ module ahb_input_port(
   input HSEL,
 
   // AHB Signals from Slave to Master
-  output logic [31:0] HRDATA,
+  output reg [31:0] HRDATA,
   output HREADYOUT,
 
   //Non-AHB Signals
@@ -39,20 +41,18 @@ module ahb_input_port(
 
 );
 
-timeunit 1ns;
-timeprecision 100ps;
 
   // AHB transfer codes needed in this module
   localparam No_Transfer = 2'b0;
 
   //control signals are stored in registers
-  logic read_enable;
+  reg read_enable;
  
   //Generate the control signals in the address phase
-  always_ff @(posedge HCLK, negedge HRESETn)
+  always @(posedge HCLK or negedge HRESETn)
     if ( ! HRESETn )
       begin
-        read_enable <= '0;
+        read_enable <= 1'b0;
       end
     else if ( HREADY && HSEL && (HTRANS != No_Transfer) )
       begin
@@ -60,22 +60,22 @@ timeprecision 100ps;
      end
     else
       begin
-        read_enable <= '0;
+        read_enable <= 1'b0;
      end
 
   //Act on control signals in the data phase
 
   // read
-  always_comb
+  always @*
     if ( ! read_enable )
       // (output of zero when not enabled for read is not necessary
       //  but may help with debugging)
-      HRDATA = '0;
+      HRDATA = 32'b0;
     else
       HRDATA = iPort;
 
   //Transfer Response
-  assign HREADYOUT = '1; //Single cycle Write & Read. Zero Wait state operations
+  assign HREADYOUT = 1'b1; //Single cycle Write & Read. Zero Wait state operations
 
 
 

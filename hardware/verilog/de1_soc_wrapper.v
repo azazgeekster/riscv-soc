@@ -5,6 +5,8 @@
 // This module is a wrapper allowing the system to be used on the DE1-SoC FPGA board
 //
 
+`timescale 1ns / 100ps
+
 module de1_soc_wrapper(
 
   input CLOCK_50,
@@ -22,8 +24,6 @@ module de1_soc_wrapper(
 
 );
 
-timeunit 1ns;
-timeprecision 100ps;
 
   localparam heartbeat_count_msb = 25; 
 
@@ -52,9 +52,9 @@ timeprecision 100ps;
 
   // This code gives us a heartbeat signal
   //
-  logic running, heartbeat;
-  logic [heartbeat_count_msb:0] tick_count;
-  always_ff @(posedge CLOCK_50, negedge HRESETn )
+  reg running, heartbeat;
+  reg [heartbeat_count_msb:0] tick_count;
+  always @(posedge CLOCK_50 or negedge HRESETn )
     if ( ! HRESETn )
       begin
         running <= 0;
@@ -70,11 +70,11 @@ timeprecision 100ps;
 
 
   // these digits on the seven-segment display are not used here
-  assign HEX0 = '1;
-  assign HEX1 = '1;
-  assign HEX2 = '1;
-  assign HEX3 = '1;
-  assign HEX4 = '1;
+  assign HEX0 = 7'b1111111;
+  assign HEX1 = 7'b1111111;
+  assign HEX2 = 7'b1111111;
+  assign HEX3 = 7'b1111111;
+  assign HEX4 = 7'b1111111;
 
   // HEX5 is status/heartbeat
   assign HEX5 = (LOCKUP) ? seven_seg_L : (!DataValid) ? seven_seg_E : (heartbeat) ? seven_seg_o : seven_seg_off;
